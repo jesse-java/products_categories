@@ -7,10 +7,7 @@ import com.naldojesse.productscategories.services.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -96,10 +93,47 @@ public class ProductCategoryController {
     public String viewCategory(Model model, @PathVariable("index") Long index) {
         Optional<Category> category = categoryService.findCategoryById(index);
         if (category.isPresent()) {
+            model.addAttribute("product", new Product());
+            model.addAttribute("products", productService.findAll());
             model.addAttribute("category", category.get());
             return "view_category.jsp";
         } else {
             return "redirect:/categories/new";
         }
     }
+
+
+    @PostMapping("/categories/{id}/add_product")
+    public String addProductToCategory(@PathVariable("id") Long category_id, @RequestParam("product") Long product_id) {
+        System.out.println(product_id);
+        System.out.println(category_id);
+
+        Optional<Category> category = categoryService.findCategoryById(category_id);
+        if(category.isPresent()) {
+            Optional<Product> product = productService.findProductById(product_id);
+            if(product.isPresent()) {
+                Category retrieved_category = category.get();
+                Product retrieved_product = product.get();
+                retrieved_category.getProducts().add(retrieved_product);
+                categoryService.updateCategory(retrieved_category);
+            }
+        }
+
+
+        return "redirect:/categories/" + category_id;
+    }
+//    public String addProducToCategory(@Valid @ModelAttribute("category") Category category, BindingResult result, @PathVariable("id") Long id) {
+//        if (result.hasErrors()) {
+//            return "view_category.jsp";
+//        } else {
+//            Optional<Category> old_category = categoryService.findCategoryById(id);
+//            if (old_category.isPresent()) {
+//                Category retrieved_category = old_category.get());
+//                Product product = category
+//            }
+//        }
+//    }
+
+
+
 }
