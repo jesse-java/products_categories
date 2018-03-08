@@ -12,15 +12,6 @@
     </c:forEach>
 </ul>
 
-
-<%--<c:forEach items="${categories}" var="c">--%>
-    <%--<c:forEach items="${product.categories}" var="pc">--%>
-        <%--product--%>
-    <%--</c:forEach>--%>
-    <%--category--%>
-<%--</c:forEach>--%>
-
-
 <form:form method="POST" action="/products/${product.id}/add_category/" modelAttribute="product">
     <form:errors path="categories"/>
     Add Category:

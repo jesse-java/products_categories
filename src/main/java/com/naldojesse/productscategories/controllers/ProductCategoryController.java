@@ -122,17 +122,6 @@ public class ProductCategoryController {
 
         return "redirect:/categories/" + category_id;
     }
-//    public String addProducToCategory(@Valid @ModelAttribute("category") Category category, BindingResult result, @PathVariable("id") Long id) {
-//        if (result.hasErrors()) {
-//            return "view_category.jsp";
-//        } else {
-//            Optional<Category> old_category = categoryService.findCategoryById(id);
-//            if (old_category.isPresent()) {
-//                Category retrieved_category = old_category.get());
-//                Product product = category
-//            }
-//        }
-//    }
 
 
 
