@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -40,16 +41,41 @@ public class ProductCategoryController {
         }
     }
 
-//    @RequestMapping("/products/{index}")
-//    public String viewProduct(Model model, @PathVariable("index") Long index) {
-//        Optional<Product> product = productService.findProductById(index);
-//        if (product.isPresent()) {
-//            model.addAttribute("product", product.get());
-//            return "view_product.jsp";
-//        } else {
-//            return "redirect:/products/new";
-//        }
-//    }
+    @RequestMapping("/products/{index}")
+    public String viewProduct(Model model, @PathVariable("index") Long index) {
+        Optional<Product> product = productService.findProductById(index);
+        if (product.isPresent()) {
+            model.addAttribute("product", product.get());
+            model.addAttribute("categories", categoryService.allCategories());
+            return "view_product.jsp";
+        } else {
+            return "redirect:/products/new";
+        }
+    }
+
+
+    @PostMapping("/products/{id}/add_category/")
+    public String addCategoryToProduct(@Valid @ModelAttribute("product") Product product, BindingResult result, @PathVariable("id") Long id) {
+        if (result.hasErrors()) {
+            return "view_product.jsp";
+        } else {
+            Optional<Product> old_product = productService.findProductById(id);
+            if (old_product.isPresent()) {
+                Product retrieved_product = old_product.get();
+                Category category = product.getCategories().get(0);
+                System.out.println("Getting category " + category);
+                retrieved_product.getCategories().add(category);
+                productService.updateProduct(retrieved_product);
+            } else {
+                System.out.println("product does not exist!");
+            }
+            return "redirect:/products/" + id;
+        }
+    }
+
+
+
+//    ----------------------------------------- CATEGORY -----------------------------
 
     @RequestMapping("/categories/new")
     public String newCategory(@ModelAttribute("category") Category category) {
@@ -62,6 +88,17 @@ public class ProductCategoryController {
             return "new_category.jsp";
         } else {
             categoryService.addCategory(category);
+            return "redirect:/categories/new";
+        }
+    }
+
+    @RequestMapping("/categories/{index}")
+    public String viewCategory(Model model, @PathVariable("index") Long index) {
+        Optional<Category> category = categoryService.findCategoryById(index);
+        if (category.isPresent()) {
+            model.addAttribute("category", category.get());
+            return "view_category.jsp";
+        } else {
             return "redirect:/categories/new";
         }
     }
